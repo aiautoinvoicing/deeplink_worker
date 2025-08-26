@@ -1,5 +1,5 @@
 {
-  "name": "referral-redirect",
+  "name": "re",
   "main": "./src/worker.js",
   "compatibility_date": "2025-08-26",
 
