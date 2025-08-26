@@ -21,10 +21,10 @@ async function handleRequest(request) {
   const code = m[1]
   const playUrl = `${PLAY_STORE_BASE}?id=${PACKAGE_NAME}&referrer=${encodeURIComponent('ref=' + code)}`
 
-  // Intent URL for Android Chrome
-  const intentUrl =
-    `intent://ref/${encodeURIComponent(code)}#Intent;scheme=myapp;package=${PACKAGE_NAME};S.browser_fallback_url=${encodeURIComponent(playUrl)};end`
+  // Android intent URL
+  const intentUrl = `intent://ref/${encodeURIComponent(code)}#Intent;scheme=aiaa;package=${PACKAGE_NAME};S.browser_fallback_url=${encodeURIComponent(playUrl)};end`
 
+  // Simple HTML page to open app or fallback to Play Store
   const html = `<!doctype html>
 <html>
 <head>
@@ -36,20 +36,14 @@ async function handleRequest(request) {
 <body>
   <p>Opening app…</p>
   <script>
-    (function() {
-      var intent = ${JSON.stringify(intentUrl)};
-      var play = ${JSON.stringify(playUrl)};
-      function tryOpen() {
-        window.location = intent;
-        setTimeout(function() { window.location = play; }, 1200);
-      }
-      var ua = navigator.userAgent || '';
-      if (ua.indexOf('Android') !== -1) {
-        tryOpen();
-      } else {
-        window.location = play;
-      }
-    })();
+    var ua = navigator.userAgent || '';
+    if (/Android/i.test(ua)) {
+      window.location = ${JSON.stringify(intentUrl)};
+      setTimeout(function() { window.location = ${JSON.stringify(playUrl)}; }, 1200);
+    } else {
+      // fallback just to Play Store for non-Android
+      window.location = ${JSON.stringify(playUrl)};
+    }
   </script>
   <p>If nothing happens, <a href="${playUrl}">install from Play Store</a></p>
 </body>
